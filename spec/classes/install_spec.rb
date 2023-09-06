@@ -6,11 +6,23 @@ describe 'ssh::install' do
   on_supported_os.each do |os, os_facts|
     context "on #{os}" do
       let(:facts) { os_facts }
-      let(:pre_condition) { "class {'ssh': package_names => 'openssh', clients_package_names => 'openssh-clients', server_package_names => 'openssh-server', server_service_name => 'sshd'}" }
 
-      it do
-        is_expected.to compile
-        is_expected.to contain_package('openssh')
+      context 'with managed install' do
+        let(:pre_condition) { 'class { ssh: }' }
+
+        it do
+          is_expected.to compile
+          is_expected.to contain_package('openssh')
+        end
+      end
+
+      context 'with unmanaged install' do
+        let(:pre_condition) { 'class { ssh: manage_install => false }' }
+
+        it do
+          is_expected.to compile
+          is_expected.not_to contain_package('openssh')
+        end
       end
     end
   end
