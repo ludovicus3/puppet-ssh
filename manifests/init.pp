@@ -2,66 +2,99 @@
 #
 # A description of what this class does
 #
+# @param [Boolean] manage_install
+# @param [Array, String] package_names
+# @param [String] package_ensure
+# @param [Boolean] manage_ssh_config
+# @param [Stdlib::Absolutepath] ssh_config_file
+# @param [String] ssh_config_file_owner
+# @param [String] ssh_config_file_group
+# @param [Stdlib::Filemode] ssh_config_file_mode
+# @param [Hash] ssh_hosts
+# @param [Boolean] manage_sshd_config
+# @param [Stdlib::Absolutepath] sshd_config_file
+# @param [String] sshd_config_file_owner
+# @param [String] sshd_config_file_group
+# @param [Stdlib::Filemode] sshd_config_file_mode
+# @param [Hash] sshd_settings
+# @param [Hash] sshd_subsystems
+# @param [Hash] sshd_matches
+# @param [Boolean] manage_service
+# @param [String] executable
+# @param [String] service_name
+# @param [String] service_ensure
+# @param [Boolean] service_enable
+#
 # @example
 #   include ssh
 class ssh (
-  Boolean $manage_packages = true,
-  Variant[Array[String], String] $package_names,
-  String $package_ensure = present,
-  # Client Settings
-  Boolean $manage_clients = true,
-  Boolean $clients_manage_packages = true,
-  Variant[Array[String], String] $clients_package_names,
-  String $clients_package_ensure = present,
-  Boolean $clients_manage_config = true,
-  Stdlib::Absolutepath $clients_config_file = '/etc/ssh/ssh_config',
-  Hash $clients_hosts = {},
-  Hash $clients_matches = {},
-  # Server Settings
-  Boolean $manage_server = true,
-  Boolean $server_manage_packages = true,
-  Variant[Array[String], String] $server_package_names,
-  String $server_package_ensure = present,
-  Boolean $server_manage_config = true,
-  Stdlib::Absolutepath $server_config_file = '/etc/ssh/sshd_config',
-  Hash $server_settings = {},
-  Hash $server_subsystems = {},
-  Hash $server_matches = {},
-  Boolean $server_manage_service = true,
-  String $server_service_name,
-  Stdlib::Ensure::Service $server_service_ensure = running,
-  Boolean $server_service_enable = true,
+  Boolean $manage_install = true,
+  Variant[Array[String], String] $package_names = 'openssh',
+  String $package_ensure = installed,
+
+  Boolean $manage_ssh_config = true,
+  Stdlib::Absolutepath $ssh_config_file = '/etc/ssh/ssh_config',
+  String $ssh_config_file_owner = 'root',
+  String $ssh_config_file_group = 'root',
+  Stdlib::Filemode $ssh_config_file_mode = '0644',
+  Hash[String, Hash] $ssh_hosts = {
+    '*' => {
+      'order' => 99,
+      'settings' => {
+        'GSSAPIAuthentication' => true,
+        'GSSAPIKeyExchange' => true,
+        'GSSAPIDelegateCredentials' => true,
+        'SendEnv' => 'LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE \
+        LC_MEASUREMENT LC_IDENTIFICATION LC_ALL LANGUAGE XMODIFIERS',
+      },
+    },
+  },
+
+  Boolean $manage_sshd_config = true,
+  Stdlib::Absolutepath $sshd_config_file = '/etc/ssh/sshd_config',
+  String $sshd_config_file_owner = 'root',
+  String $sshd_config_file_group = 'root',
+  Stdlib::Filemode $sshd_config_file_mode = '0640',
+  Ssh::Settings $sshd_settings = {},
+  Hash[String, Hash] $sshd_subsystems = {
+    'sftp' => {
+      command => '/usr/libexec/openssh/sftp-server',
+    },
+  },
+  Hash[String, Hash] $sshd_matches = {},
+
+  Boolean $manage_service = true,
+  Stdlib::Absolutepath $executable = '/usr/sbin/sshd',
+  String $service_name = 'sshd',
+  Stdlib::Ensure::Service $service_ensure = running,
+  Boolean $service_enable = true,
 ) {
   contain 'ssh::install'
 
-  if $manage_clients {
-    class { 'ssh::clients':
-      manage_packages => $clients_manage_packages,
-      package_names   => $clients_package_names,
-      package_ensure  => $clients_package_ensure,
-      manage_config   => $clients_manage_config,
-      config_file     => $clients_config_file,
-      hosts           => $clients_hosts,
-      matches         => $clients_matches,
-      require         => Class['ssh::install'],
-    }
+  class { 'ssh::client':
+    manage_config     => $manage_ssh_config,
+    config_file       => $ssh_config_file,
+    config_file_owner => $ssh_config_file_owner,
+    config_file_group => $ssh_config_file_group,
+    config_file_mode  => $ssh_config_file_mode,
+    hosts             => $ssh_hosts,
+    require           => Class['ssh::install'],
   }
 
-  if $manage_server {
-    class { 'ssh::server':
-      manage_packages => $server_manage_packages,
-      package_names   => $server_package_names,
-      package_ensure  => $server_package_ensure,
-      manage_config   => $server_manage_config,
-      config_file     => $server_config_file,
-      settings        => $server_settings,
-      subsystems      => $server_subsystems,
-      matches         => $server_matches,
-      manage_service  => $server_manage_service,
-      service_name    => $server_service_name,
-      service_ensure  => $server_service_ensure,
-      service_enable  => $server_service_enable,
-      require         => Class['ssh::install'],
-    }
+  class { 'ssh::server':
+    manage_config     => $manage_sshd_config,
+    config_file       => $sshd_config_file,
+    config_file_owner => $sshd_config_file_owner,
+    config_file_group => $sshd_config_file_group,
+    config_file_mode  => $sshd_config_file_mode,
+    settings          => $sshd_settings,
+    subsystems        => $sshd_subsystems,
+    matches           => $sshd_matches,
+    manage_service    => $manage_service,
+    executable        => $executable,
+    service_name      => $service_name,
+    service_ensure    => $service_ensure,
+    service_enable    => $service_enable,
+    require           => Class['ssh::install'],
   }
 }

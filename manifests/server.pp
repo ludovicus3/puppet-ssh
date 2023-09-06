@@ -1,30 +1,24 @@
-# @summary A short summary of the purpose of this class
-#
-# A description of what this class does
-#
-# @example
-#   include ssh::server
+# @api private
 class ssh::server (
-  Boolean $manage_packages = true,
-  Variant[Array[String], String] $package_names,
-  String $package_ensure = present,
+  Boolean $manage_config,
+  Stdlib::Absolutepath $config_file,
+  Stdlib::Filemode $config_file_mode,
+  String $config_file_owner,
+  String $config_file_group,
 
-  Boolean $manage_config = true,
-  Stdlib::Absolutepath $config_file = '/etc/ssh/sshd_config',
-  Hash $settings = {},
-  Hash $subsystems = {},
-  Hash $matches = {},
+  Ssh::Settings $settings,
+  Hash $subsystems,
+  Hash $matches,
 
-  Boolean $manage_service = true,
+  Boolean $manage_service,
+  Stdlib::Absolutepath $executable,
   String $service_name,
-  Stdlib::Ensure::Service $service_ensure = running,
-  Boolean $service_enable = true,
+  Stdlib::Ensure::Service $service_ensure,
+  Boolean $service_enable,
 ) {
-  contain 'ssh::server::install'
   contain 'ssh::server::config'
   contain 'ssh::server::service'
 
-  Class['ssh::server::install']
-  -> Class['ssh::server::config']
+  Class['ssh::server::config']
   ~> Class['ssh::server::service']
 }
