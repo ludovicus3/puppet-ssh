@@ -2,13 +2,17 @@
   "name": "ludovicus-ssh",
   "version": "0.1.0",
   "author": "Jason Galens",
-  "summary": "",
+  "summary": "Manage SSH",
   "license": "Apache-2.0",
-  "source": "",
+  "source": "https://github.com/ludovicus3/puppet-ssh.git",
   "dependencies": [
     {
       "name": "puppetlabs-stdlib",
       "version_requirement": ">= 6.0.0 <7.0.0"
+    },
+    {
+      "name": "puppetlabs-concat",
+      "version_requirement": ">= 7.1.1 <8.0.0"
     }
   ],
   "operatingsystem_support": [
@@ -55,7 +59,7 @@
       "version_requirement": ">= 4.10.0 < 7.0.0"
     }
   ],
-  "pdk-version": "1.18.1",
-  "template-url": "pdk-default#1.18.1",
-  "template-ref": "tags/1.18.1-0-g3d2e75c"
+  "pdk-version": "3.0.0",
+  "template-url": "pdk-default#3.0.0",
+  "template-ref": "tags/3.0.0-0-g056e50d"
 }
