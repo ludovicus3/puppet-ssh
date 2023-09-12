@@ -14,8 +14,8 @@ describe 'ssh::server::config' do
           is_expected.to compile
           is_expected.to contain_concat('/etc/ssh/sshd_config')
           is_expected.to contain_exec('ssh::server::config::test')
-          .that_subscribes_to('Concat[/etc/ssh/sshd_config]')
-          .that_notifies('Service[sshd]')
+            .that_subscribes_to('Concat[/etc/ssh/sshd_config]')
+            .that_notifies('Service[sshd]')
         end
       end
 

@@ -1,21 +1,32 @@
-# @summary A short summary of the purpose of this defined type.
+# @summary Configures conditional settings for the ssh server
 #
-# A description of what this defined type does
+# Introduces a conditional block. If all the criteria of the match are satisfied, the
+# settings override those set in the global section of the config file.
 #
-# @param [Hash] settings
+# The arguments to match are one or more criteria-pattern pairs. The criteria are user,
+# group, host, and address. The patterns may consist of single entries or and array of entries.
+#
+# @param [Ssh::Settings] settings
 #   Settings that should be applied to the match
 #
-# @param [String, Integer] order
+# @param [Variant[Integer[0], String[1]]] order
 #   Priority of the match, lowest goes first
 #
-# @param [Hash] filter
-#   Hash of the filter settings
+# @param [Optional[Ssh::Server::Match::Filter]] filter
+#   Used to define a filter using a hash format. If not defined, the title is used as the match filter.
 #
 # @example
-#   ssh::server::match { 'namevar': }
+#   ssh::server::match { 'namevar': 
+#     filter => {
+#       user => 'test',
+#     },
+#     settings => {
+#       banner => '/etc/issue.test'
+#     },
+#   }
 define ssh::server::match (
   Ssh::Settings $settings,
-  Variant[Integer[1], String[1]] $order = 10,
+  Variant[Integer[0], String[1]] $order = 10,
   Optional[Ssh::Server::Match::Filter] $filter = undef,
 ) {
   include 'ssh::server'

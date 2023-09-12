@@ -3,8 +3,8 @@
 # A description of what this class does
 #
 # @param [Boolean] manage_install
-# @param [Array, String] package_names
-# @param [String] package_ensure
+# @param [Variant[Array[String[1], 1], String[1]]] package_names
+# @param [Stdlib::Ensure::Package] package_ensure
 # @param [Boolean] manage_ssh_config
 # @param [Stdlib::Absolutepath] ssh_config_file
 # @param [String] ssh_config_file_owner
@@ -16,21 +16,21 @@
 # @param [String] sshd_config_file_owner
 # @param [String] sshd_config_file_group
 # @param [Stdlib::Filemode] sshd_config_file_mode
-# @param [Hash] sshd_settings
+# @param [Ssh::Settings] sshd_settings
 # @param [Hash] sshd_subsystems
 # @param [Hash] sshd_matches
 # @param [Boolean] manage_service
-# @param [String] executable
+# @param [Stdlib::Absolutepath] executable
 # @param [String] service_name
-# @param [String] service_ensure
+# @param [Stdlib::Ensure::Service] service_ensure
 # @param [Boolean] service_enable
 #
 # @example
 #   include ssh
 class ssh (
   Boolean $manage_install = true,
-  Variant[Array[String], String] $package_names = 'openssh',
-  String $package_ensure = installed,
+  Variant[Array[String[1], 1], String[1]] $package_names = 'openssh',
+  Stdlib::Ensure::Package $package_ensure = installed,
 
   Boolean $manage_ssh_config = true,
   Stdlib::Absolutepath $ssh_config_file = '/etc/ssh/ssh_config',

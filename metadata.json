@@ -5,6 +5,8 @@
   "summary": "Manage SSH",
   "license": "Apache-2.0",
   "source": "https://github.com/ludovicus3/puppet-ssh.git",
+  "project_page": "https://github.com/ludovicus3/puppet-ssh",
+  "issues_url": "https://github.com/ludovicus3/puppet-ssh/issues",
   "dependencies": [
     {
       "name": "puppetlabs-stdlib",

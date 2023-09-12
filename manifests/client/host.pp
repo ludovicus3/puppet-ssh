@@ -2,18 +2,18 @@
 #
 # A description of what this defined type does
 #
-# @param [String] host
-# @param [Integer, String] order
-# @param [Hash] settings
-# @param [String] user
+# @param [Ssh::Pattern] host
+# @param [Variant[Integer[0], String[1]]] order
+# @param [Ssh::Settings] settings
+# @param [Optional[String[1]]] user
 #
 # @example
 #   ssh::client::host { 'namevar': }
 define ssh::client::host (
   Ssh::Pattern $host = $title,
-  Variant[Integer, String[1]] $order = '10',
+  Variant[Integer[0], String[1]] $order = '10',
   Ssh::Settings $settings,
-  Optional[String] $user = undef,
+  Optional[String[1]] $user = undef,
 ) {
   include 'ssh::client'
 
